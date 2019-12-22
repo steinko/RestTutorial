@@ -1,8 +1,15 @@
 package org.steinko.rest;
 
 public class Person {
-	private String firstName = "Stein";
-	private String familyName = "Korsveien";
+	private String firstName;
+	private String familyName;
+	
+	public Person() { }
+	
+	public Person(String firstName, String familyName) {
+		this.firstName = firstName;
+		this.familyName = familyName;
+	}
 	
 	public String getFirstName() {
 		return firstName;
