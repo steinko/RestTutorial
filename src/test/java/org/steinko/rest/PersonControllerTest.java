@@ -11,8 +11,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,7 +38,7 @@ public class PersonControllerTest {
 @Test
 public void getProductsList() throws Exception {
    String uri = "/person";
-   String person = "{\"fisrtName\":\"Stein\",\"familyName\":\"Korsveien\"}";
+   String person = "{\"id\":\"2\",\"fisrtName\":\"Stein\",\"familyName\":\"Korsveien\"}";
 		       
    MvcResult mvcResult = mvc.perform(get(uri)
       .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
@@ -42,14 +46,14 @@ public void getProductsList() throws Exception {
    int status = mvcResult.getResponse().getStatus();
    assertEquals(200, status);
    String content = mvcResult.getResponse().getContentAsString();
-   assertEquals( content, "{\"firstName\":\"Stein\",\"familyName\":\"Korsveien\"}");
+   assertEquals( content, "{\"id\":2,\"firstName\":\"Stein\",\"familyName\":\"Korsveien\"}");
 }
 
 @Test
 public void createProduct() throws Exception {
   
    String uri = "/person/";
-   Person person = new Person("Anne","Korsveien");
+   Person person = new Person(1,"Anne","Korsveien");
  
    ObjectMapper mapper = new ObjectMapper();
    
@@ -60,5 +64,27 @@ public void createProduct() throws Exception {
    int status = mvcResult.getResponse().getStatus();
    assertEquals(201, status);
 }
+
+  @Test
+  public void deleteProduct() throws Exception {
+	  String uri = "/person/1";
+	  MvcResult mvcResult = mvc.perform(delete(uri).accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+	  int status = mvcResult.getResponse().getStatus();
+	   assertEquals(200, status);
+  }
+  
+  @Test
+  public void udateProduct() throws Exception {
+	  String uri = "/person/1";
+	  Person person = new Person(1,"Upadate","Name");
+	  ObjectMapper mapper = new ObjectMapper();
+	  String inputJson = mapper.writeValueAsString(person);
+	   MvcResult mvcResult = mvc.perform(put(uri)
+	      .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
+	   
+	   int status = mvcResult.getResponse().getStatus();
+	   assertEquals(200, status);
+	  
+  }
 
 }

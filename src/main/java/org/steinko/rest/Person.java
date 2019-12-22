@@ -1,16 +1,23 @@
 package org.steinko.rest;
 
 public class Person {
+	private Integer id;
+	
 	private String firstName;
 	private String familyName;
 	
 	public Person() { }
 	
-	public Person(String firstName, String familyName) {
+	public Person(Integer id, String firstName, String familyName) {
+		this.id = id;
 		this.firstName = firstName;
 		this.familyName = familyName;
 	}
 	
+	public Integer getId() {
+		return id;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
