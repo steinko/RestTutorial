@@ -32,7 +32,10 @@
     ]
   },
   "devDependencies": {
+    "chromedriver": "^79.0.0",
     "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.2"
+    "enzyme-adapter-react-16": "^1.15.2",
+    "jest-environment-webdriver": "^0.2.0",
+    "selenium-webdriver": "^3.6.0"
   }
 }
