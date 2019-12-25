@@ -22,5 +22,3 @@ Feature: Person API Test
     Given Person with id 1 exist with first name "Stein" and familiy name "Korsveien"
     When  I want to update the person with 1 with first name "Sigvardt" familiy name "Cool"
     Then  The persons first name and fammiliy name is updated
-    
-    

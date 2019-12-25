@@ -9,23 +9,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
-@RestController
+@CrossOrigin(origins = "*")
+@RestController("persomController")
+@RequestMapping("/person")
 public class PersonController {
 	
 	private static Logger logger = LogManager.getLogger(PersonController.class);
 	
-	@RequestMapping(value = "/person")
+	@RequestMapping
 	public Person getPerson() {
 		logger.info("get");
 		return new Person(2,"Stein", "Korsveien");
 	}
 	
-	@PostMapping("/person/")
+	@PostMapping("/")
 	public ResponseEntity<String> createPerson(@RequestBody Person person) {
 		Person aPerson =  person;
 		logger.info("post:"+ person.getId().toString()+ person.getFirstName()+ person.getFamilyName());
@@ -33,13 +35,13 @@ public class PersonController {
 	}
 	
 	
-	@DeleteMapping("/person/{id}")
+	@DeleteMapping("/{id}")
 	public  ResponseEntity<String> deletePerson( @PathVariable("id") int id) {
 		logger.info("delete");
 	    return new ResponseEntity<String>( HttpStatus.OK);
 	}
 	
-	@PutMapping("/person/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<Person> updateEmployee(@PathVariable("id") int id, @RequestBody Person person) 
 	{
 		logger.info("put:"+ person.getId().toString()+ person.getFirstName()+ person.getFamilyName());

@@ -8,10 +8,11 @@ import io.restassured.RestAssured.*;
 import io.restassured.matcher.RestAssuredMatchers.*;
 import org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.net.URISyntaxException;
-
+import io.restassured.RestAssured;
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.post;
 import static io.restassured.RestAssured.when;
@@ -23,6 +24,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +32,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class PersonAPITest {
 	
@@ -49,14 +56,11 @@ public class PersonAPITest {
 	private static Logger logger = LogManager.getLogger(PersonAPITest.class);
 	private Response response;
 	
-	@Test
-	public void whenRequestGet_thenOK(){ 
-	    when().get( "/person")
-	    .then().statusCode(200)
-	    .assertThat()
-	      .body("firstName", equalTo("Stein"))
-	      .body("familyName", equalTo("Korsveien"));
+	@BeforeEach
+	public void setUp() {
+		RestAssured.baseURI = "https://springboot15.appspot.com";
 	}
+	
 	
 	/**
 	 * Scenario Get the Person
@@ -70,6 +74,7 @@ public class PersonAPITest {
 
 	@When("I activet the get person")
 	public void i_activet_the_get_person() {
+		RestAssured.baseURI = "https://springboot15.appspot.com";
 		response =when().get( "/person");
 	}
 
@@ -96,7 +101,7 @@ public class PersonAPITest {
     public void i_want_to_create_a_person_with_first_name_and_family_name(String firstName, String familyName) throws JsonProcessingException {
     	JsonPerson bean = new JsonPerson(1, firstName, familyName);
     	String json = convertToJson(bean);
-    	
+    	RestAssured.baseURI = "https://springboot15.appspot.com";
     	response = given()
 		          .contentType("application/json")
 		    	  .body(json)
@@ -124,6 +129,7 @@ public class PersonAPITest {
 
     @When("I want to delete a person with id {int}")
     public void i_want_to_delete_a_person_with_id(Integer id) {
+    	RestAssured.baseURI = "https://springboot15.appspot.com";
     	String url = "/person/" + id.toString();
     	response = given()
                    .when ()
@@ -149,6 +155,7 @@ public class PersonAPITest {
 
     @When("I want to update the person with {int} with first name {string} familiy name {string}")
     public void i_want_to_update_the_person_with_with_first_name_familiy_name(Integer id, String firstName, String familyName) throws JsonProcessingException {
+    	RestAssured.baseURI = "https://springboot15.appspot.com";
     	String url = "/person/" + id.toString();
     	JsonPerson bean = new JsonPerson(1, "Sture", "Stureson");
     	String json = convertToJson(bean);
@@ -165,6 +172,7 @@ public class PersonAPITest {
     public void the_persons_first_name_and_fammiliy_name_is_updated() {
        
     }
+    
 
     
     private String convertToJson(JsonPerson bean) throws JsonProcessingException {
