@@ -42,10 +42,10 @@ public class PersonController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Person> updateEmployee(@PathVariable("id") int id, @RequestBody Person person) 
+	public ResponseEntity<String> updatePerson(@PathVariable("id") int id, @RequestBody Person person) 
 	{
 		logger.info("put:"+ person.getId().toString()+ person.getFirstName()+ person.getFamilyName());
-	    return new ResponseEntity<Person>( HttpStatus.OK);
+	    return new ResponseEntity<String>( HttpStatus.OK);
 	}
 	
 

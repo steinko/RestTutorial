@@ -3,94 +3,114 @@ package org.steinko.rest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.boot.web.server.LocalServerPort;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.lang.NullPointerException;
-import java.util.Map;
-import java.util.HashMap;
+
+import static io.restassured.http.ContentType.JSON;
+import static org.springframework.http.HttpStatus.OK;
+import static org.hamcrest.CoreMatchers.equalTo;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.client.RestClientException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.springframework.web.context.WebApplicationContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.get;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+
+
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PersonControllerIT  {
+	
 	
 	 @LocalServerPort
 	 private  int localServerPort;
 	 private String url;
-	 private URI uri;
 	 private static Logger logger = LogManager.getLogger(PersonController.class);
 	 
   @BeforeEach
-  void setUp() throws URISyntaxException,NullPointerException {
-	url =  "http://localhost:" + localServerPort + "/person/";
-	logger.info(url);
-	
-	uri = getUri(url);
-
+  void setUp()  {
+	url =  "http://localhost:" + localServerPort + "/person";
+	logger.info(url);	
   }
+  
+  @Autowired
+  private WebApplicationContext webApplicationContext;
+   
+  
 
   @Test
-  void shouldReponsOK() {
-    TestRestTemplate testRestTemplate = new TestRestTemplate();
-    ResponseEntity<String> response = testRestTemplate.
-    getForEntity(url, String.class);
-    assertEquals(response.getStatusCode(), HttpStatus.OK);
+  void shoulReturnPerson() throws JsonProcessingException{
+	  Person person  = new Person(2,"Stein","Korsveien");
+	   String jsonPerson = ControllerTestUtility.convertToJson(person);
+	   given()
+	      .webAppContextSetup(webApplicationContext)
+	   .when()
+        .get(url)
+      .then()
+        .log().ifValidationFails()
+        .statusCode(OK.value())
+        .contentType(JSON)
+        .body(equalTo(jsonPerson));
+      
   }
 
+
+
+
   @Test
-  void shouldCreatePerson() {
+  void shouldCreatePerson() throws JsonProcessingException {
      Person person = new Person(1,"Anne", "Korsveien");
-     TestRestTemplate restTemplate = new TestRestTemplate();
-     ResponseEntity<String> response = restTemplate.postForEntity(uri,person, String.class);
-     assertEquals(response.getStatusCode(), HttpStatus.CREATED);
+     String jsonPerson = ControllerTestUtility.convertToJson(person);
+     given()
+       .webAppContextSetup(webApplicationContext)
+       .body(person).
+     when()
+       .post(url).
+     then()
+       .log().ifValidationFails()
+       .statusCode(OK.value())
+       .contentType(JSON);
+       
+ 
  }
 
   @Test
-  void shouldDeletePerson() throws URISyntaxException, NullPointerException { 
-	 TestRestTemplate restTemplate = new TestRestTemplate();
+  void shouldDeletePerson() 
+  { 
+
 	 url = url + "/1";
-	 uri = getUri(url);
-	
-	        try {
-	        	restTemplate.delete(uri);
-	        } catch (RestClientException restClient) {
-				logger.error(restClient.getMessage());	
-			}
+	 given()
+	   .webAppContextSetup(webApplicationContext).
+	 when()
+	   .delete(url).
+	 then()
+	   .log().ifValidationFails()
+       .statusCode(OK.value());
     }
   
    @Test  
-   void updateName() throws URISyntaxException,NullPointerException
+   void updateName() 
   {
-      url = url + "/1";
-      uri = getUri(url);
+      
         
-      Person updatedPerson = new Person(1, "New Name", "Gilly");
-       
-      TestRestTemplate restTemplate = new TestRestTemplate();
-      restTemplate.put ( uri, updatedPerson);
+      Person person = new Person(1, "New Name", "Gilly");
+      
+      given()
+        .webAppContextSetup(webApplicationContext)
+        .body(person).
+         queryParam("id",1).
+      when()
+        .put(url).
+      then()
+        .log().ifValidationFails()
+        .statusCode(OK.value());
   }
    
-   private URI getUri(String url) throws URISyntaxException,NullPointerException {
-	    URI uri;
-	   try {
-		    uri = new URI(url);
-		    return uri;
-		} catch (URISyntaxException uriSyntax) {
-			logger.error(uriSyntax.getMessage());
-			throw(uriSyntax);
-			
-		} catch (NullPointerException nullPointer) {
-			logger.error(nullPointer.getMessage());
-			throw (nullPointer);
-		}
-	  
-	   
-   }
 }

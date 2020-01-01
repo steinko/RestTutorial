@@ -1,89 +1,96 @@
 package org.steinko.rest;
 
-import org.springframework.test.web.servlet.MvcResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import org.junit.jupiter.api.BeforeAll;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.get;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static io.restassured.http.ContentType.JSON;
+import static org.springframework.http.HttpStatus.OK;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+@ExtendWith(MockitoExtension.class)
 public class PersonControllerTest {
+	
 	private static Logger logger = LogManager.getLogger(PersonController.class);
+	   
+  @Test
+  public void shouldReturnPersonDetails() throws Exception,JsonProcessingException {
+    Person person  = new Person(2,"Stein","Korsveien");
+    String jsonPerson = ControllerTestUtility.convertToJson(person);
 	
-
-	private MockMvc mvc;
-	
-	@BeforeEach
-	void setUp() {
-		mvc= MockMvcBuilders.standaloneSetup(new PersonController()).build();
-	}
-	
-	
-@Test
-public void getProductsList() throws Exception {
-   String uri = "/person";
-   String person = "{\"id\":\"2\",\"fisrtName\":\"Stein\",\"familyName\":\"Korsveien\"}";
-		       
-   MvcResult mvcResult = mvc.perform(get(uri)
-      .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+    String url = "/person";
    
-   int status = mvcResult.getResponse().getStatus();
-   assertEquals(200, status);
-   String content = mvcResult.getResponse().getContentAsString();
-   assertEquals( content, "{\"id\":2,\"firstName\":\"Stein\",\"familyName\":\"Korsveien\"}");
-}
+    given()
+     .standaloneSetup(new PersonController()).
+    when()
+       .get(url).
+    then()
+        .log().ifValidationFails()
+        .statusCode(OK.value())
+        .contentType(JSON)
+        .body(equalTo(jsonPerson));
+  }
 
-@Test
-public void createProduct() throws Exception {
+  @Test
+  public void createProduct() throws Exception, JsonProcessingException {
   
-   String uri = "/person/";
-   Person person = new Person(1,"Anne","Korsveien");
+     String uri = "/person";
+     Person person = new Person(1,"Anne","Korsveien");
  
-   ObjectMapper mapper = new ObjectMapper();
+     String jsonPerson = ControllerTestUtility.convertToJson(person);
    
-   String inputJson = mapper.writeValueAsString(person);
-   MvcResult mvcResult = mvc.perform(post(uri)
-      .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
-   
-   int status = mvcResult.getResponse().getStatus();
-   assertEquals(201, status);
+     given().
+       standaloneSetup(new PersonController()).
+       body(jsonPerson).
+     when().
+       post(uri).
+     then().
+       log().ifValidationFails().
+       statusCode(OK.value()).
+       contentType(JSON);
 }
 
   @Test
   public void deleteProduct() throws Exception {
+	  
 	  String uri = "/person/1";
-	  MvcResult mvcResult = mvc.perform(delete(uri).accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
-	  int status = mvcResult.getResponse().getStatus();
-	   assertEquals(200, status);
+	  given().
+	     standaloneSetup(new PersonController()).
+	   when().
+	     delete(uri).
+	  then().
+	     log().ifValidationFails().
+	     statusCode(OK.value());  
   }
   
   @Test
-  public void udateProduct() throws Exception {
-	  String uri = "/person/1";
+  public void udateProduct() throws Exception,JsonProcessingException {
+	  String uri = "/person";
 	  Person person = new Person(1,"Upadate","Name");
-	  ObjectMapper mapper = new ObjectMapper();
-	  String inputJson = mapper.writeValueAsString(person);
-	   MvcResult mvcResult = mvc.perform(put(uri)
-	      .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
-	   
-	   int status = mvcResult.getResponse().getStatus();
-	   assertEquals(200, status);
+	  String jsonPerson = ControllerTestUtility.convertToJson(person);
+	  
+	   given().
+	     queryParam("id",1).
+	     standaloneSetup(new PersonController()).
+	     body(jsonPerson).
+	   when().
+	     put(uri).
+	  then().
+	     log().ifValidationFails().
+	     statusCode(OK.value()).
+	     contentType(JSON);
 	  
   }
 

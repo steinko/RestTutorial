@@ -1,0 +1,22 @@
+it ('should display detailed person information', () => { 
+	cy.visit('/')
+	cy.get('#id').should('have.attr','value','2')
+	cy.get('#firstName').should('have.attr','value','Stein')
+	cy.get('#familyName').should('have.attr','value','Korsveien')
+} )
+
+it ('should create person ', () => { 
+	cy.visit('/')
+	cy.get('#firstName')
+	   .clear()
+	   .type("Sturlar")
+	   .should('have.attr','value','Sturlar')
+	cy.get('#familyName')
+		.clear()
+		.type("Sturlarson")
+		.should('have.attr','value','Sturlarson')
+	cy.get('#submit').click()
+	cy.get('#firstName').should('have.attr','value','Sturlar')
+	cy.get('#familyName').should('have.attr','value','Sturlarson')
+    cy.get('#id').should('have.attr','value','2')
+} )

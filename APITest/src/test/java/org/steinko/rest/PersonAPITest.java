@@ -58,7 +58,7 @@ public class PersonAPITest {
 	
 	@BeforeEach
 	public void setUp() {
-		RestAssured.baseURI = "https://springboot15.appspot.com";
+		RestAssured.baseURI = "http://localhost:8080";
 	}
 	
 	
@@ -74,7 +74,7 @@ public class PersonAPITest {
 
 	@When("I activet the get person")
 	public void i_activet_the_get_person() {
-		RestAssured.baseURI = "https://springboot15.appspot.com";
+		RestAssured.baseURI = "http://localhost:8080";
 		response =when().get( "/person");
 	}
 
@@ -101,7 +101,7 @@ public class PersonAPITest {
     public void i_want_to_create_a_person_with_first_name_and_family_name(String firstName, String familyName) throws JsonProcessingException {
     	JsonPerson bean = new JsonPerson(1, firstName, familyName);
     	String json = convertToJson(bean);
-    	RestAssured.baseURI = "https://springboot15.appspot.com";
+    	RestAssured.baseURI = "http://localhost:8080";
     	response = given()
 		          .contentType("application/json")
 		    	  .body(json)
@@ -129,7 +129,7 @@ public class PersonAPITest {
 
     @When("I want to delete a person with id {int}")
     public void i_want_to_delete_a_person_with_id(Integer id) {
-    	RestAssured.baseURI = "https://springboot15.appspot.com";
+    	RestAssured.baseURI = "http://localhost:8080";
     	String url = "/person/" + id.toString();
     	response = given()
                    .when ()
@@ -155,7 +155,7 @@ public class PersonAPITest {
 
     @When("I want to update the person with {int} with first name {string} familiy name {string}")
     public void i_want_to_update_the_person_with_with_first_name_familiy_name(Integer id, String firstName, String familyName) throws JsonProcessingException {
-    	RestAssured.baseURI = "https://springboot15.appspot.com";
+    	RestAssured.baseURI = "http://localhost:8080";
     	String url = "/person/" + id.toString();
     	JsonPerson bean = new JsonPerson(1, "Sture", "Stureson");
     	String json = convertToJson(bean);
@@ -170,6 +170,7 @@ public class PersonAPITest {
 
     @Then("The persons first name and fammiliy name is updated")
     public void the_persons_first_name_and_fammiliy_name_is_updated() {
+    	response.then().statusCode(200);
        
     }
     
