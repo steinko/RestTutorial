@@ -3,6 +3,6 @@ jdk: openjdk11
 os: linux
 dist: trusty
 script: 
-  - ./gradlew check
-  - ./gradlew sonarqube
+  - ./backend/gradlew check
+  - ./backend/gradlew sonarqube
 
