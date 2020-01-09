@@ -9,11 +9,24 @@
 plugins {
     // Apply the java plugin to add support for Java
     id 'java'
+    id 'com.patdouble.cucumber-jvm' version '0.19'
+}
+
+addCucumberSuite 'cucumberTest'
+
+cucumber {
+    maxParallelForks = 3
+}
+
+cucumberTest {
+    stepDefinitionRoots = ['cucumber.steps', 'cucumber.hooks', 'org.steinko.rest'] // default
+    junitReport = true
 }
 
 repositories {
    
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -22,57 +35,47 @@ dependencies {
 
    
     // https://mvnrepository.com/artifact/io.cucumber/cucumber-java
-    testImplementation 'io.cucumber:cucumber-java:5.0.0-RC3'
+    cucumberTestImplementation 'io.cucumber:cucumber-java:5.0.0-RC3'
 
 
     // https://mvnrepository.com/artifact/io.cucumber/cucumber-junit
-    testImplementation 'io.cucumber:cucumber-junit:5.0.0-RC3'
+    cucumberTestImplementation'io.cucumber:cucumber-junit:5.0.0-RC3'
 
 
     // https://mvnrepository.com/artifact/io.rest-assured/spring-mock-mvc
-    testImplementation 'io.rest-assured:spring-mock-mvc:4.1.2'
+    cucumberTestImplementation 'io.rest-assured:spring-mock-mvc:4.1.2'
 
 
     // https://mvnrepository.com/artifact/io.rest-assured/rest-assured
-     testImplementation 'io.rest-assured:rest-assured:4.1.2'
+     cucumberTestImplementation 'io.rest-assured:rest-assured:4.1.2'
 
      // https://mvnrepository.com/artifact/org.hamcrest/hamcrest
-      testImplementation 'org.hamcrest:hamcrest:2.2'
+      cucumberTestImplementation 'org.hamcrest:hamcrest:2.2'
 
 
     // This dependency is used by the application.
-    implementation 'com.google.guava:guava:28.0-jre'
+    cucumberTestImplementation 'com.google.guava:guava:28.0-jre'
 
-    // Use JUnit Jupiter API for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
-
-    // Use JUnit Jupiter Engine for testing.
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
-
-     testImplementation("junit:junit:4.12")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.5.1")
-
+   
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-    testImplementation 'com.fasterxml.jackson.core:jackson-core:2.10.1'
+    cucumberTestImplementation 'com.fasterxml.jackson.core:jackson-core:2.10.1'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.10.1'
+    cucumberTestImplementation 'com.fasterxml.jackson.core:jackson-core:2.10.1'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
+    cucumberTestImplementation 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
-    testImplementation 'com.fasterxml.jackson.core:jackson-annotations:2.10.1'
+    cucumberTestImplementation 'com.fasterxml.jackson.core:jackson-annotations:2.10.1'
 
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
-    testImplementation 'org.apache.logging.log4j:log4j-core:2.13.0'
-    testImplementation 'org.apache.logging.log4j:log4j-api:2.13.0'
+    cucumberTestImplementation 'org.apache.logging.log4j:log4j-core:2.13.0'
+    cucumberTestImplementation 'org.apache.logging.log4j:log4j-api:2.13.0'
+    // https://mvnrepository.com/artifact/net.masterthought/cucumber-reporting
+    cucumberTestImplementation 'net.masterthought:cucumber-reporting:5.0.1'
   
 }
 
 
 
-test {
-    // Use junit platform for unit tests
-    useJUnitPlatform()
-}
 
 configurations {
     cucumberRuntime {

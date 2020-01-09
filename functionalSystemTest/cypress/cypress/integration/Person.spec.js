@@ -1,12 +1,37 @@
-it ('should display detailed person information', () => { 
+it ('should get selected pereson', () => { 
 	cy.visit('/')
+	cy.get('#id').as('id').should('have.attr','value','')
+	cy.get('#firstName').should('have.attr','value','')
+	cy.get('#familyName').should('have.attr','value','')
+	cy.get('@id').type('1').should('have.attr','value', '1')
+	cy.get('button').click()
+    cy.get('#id').should('have.attr','value','1')
+	cy.get('#firstName').should('have.attr','value','Oddmund')
+	cy.get('#familyName').should('have.attr','value','Korsveien')
+	cy.get('@id').clear().type('2').should('have.attr','value', '2')
+	cy.get('button').click()
+    cy.get('#id').should('have.attr','value','2')
+	cy.get('#firstName').should('have.attr','value','Stein')
+	cy.get('#familyName').should('have.attr','value','Korsveien')
+
+} )
+
+xit ('should display detail information for person with id 1', () => { 
+	cy.visit('/?id=1')
+	cy.get('#id').should('have.attr','value','1')
+	cy.get('#firstName').should('have.attr','value','Oddmund')
+	cy.get('#familyName').should('have.attr','value','Korsveien')
+} )
+
+xit ('should display detail information for person with id 2', () => { 
+	cy.visit('/?id=2')
 	cy.get('#id').should('have.attr','value','2')
 	cy.get('#firstName').should('have.attr','value','Stein')
 	cy.get('#familyName').should('have.attr','value','Korsveien')
 } )
 
-it ('should create person ', () => { 
-	cy.visit('/')
+xit ('should update detailed information for person with id 2', () => { 
+	cy.visit('/?id=2')
 	cy.get('#firstName')
 	   .clear()
 	   .type("Sturlar")

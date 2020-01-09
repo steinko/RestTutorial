@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Person from './Person'
+import Person from './components/Person'
 
 function App() {
   return (

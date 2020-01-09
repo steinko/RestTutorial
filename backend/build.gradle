@@ -1,0 +1,108 @@
+buildscript {    // Configuration for building
+  repositories {
+    jcenter()    // Bintray's repository - a fast Maven Central mirror & more
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'com.google.cloud.tools:appengine-gradle-plugin:2.1.0'    // Latest 1.x.x release
+  }
+}
+
+plugins {
+	id 'org.springframework.boot' version '2.2.2.RELEASE'
+  id 'java'
+  id "org.sonarqube" version "2.8"
+	id 'jacoco' 
+   
+}
+
+apply plugin: 'com.google.cloud.tools.appengine-appyaml'
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        
+    }
+ }
+
+ sonarqube {
+    properties {
+		    property "sonar.host.url","https://sonarcloud.io"
+            property "sonar.sourceEncoding", "UTF-8"
+		    property "sonar.login", "43983a01ea79d77e7ce4931e989733cdcfb6ef47"
+		    property "sonar.organization" , "steinko-github"
+       
+    }
+}
+
+appengine {
+  
+
+  stage {
+      appEngineDirectory  'config'
+      dockerDirectory 'config'
+      artifact  'build/libs/RestTutorial.jar'
+      
+    }
+  deploy {   
+    appEngineDirectory = './'
+    stopPreviousVersion = true  // default - stop the current version
+    promote = true              // default - & make this the current version
+    projectId = 'springboot15'
+    version = '1'
+  }
+
+}
+
+
+repositories {
+    // Use jcenter for resolving dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+}
+
+dependencies {
+      // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+
+    // https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+
+
+	implementation 'org.springframework.boot:spring-boot-starter-web:2.2.2.RELEASE'
+	testImplementation('org.springframework.boot:spring-boot-starter-test:2.2.2.RELEASE') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+  
+
+    // https://mvnrepository.com/artifact/io.rest-assured/spring-mock-mvc
+     testCompile group: 'io.rest-assured', name: 'spring-mock-mvc', version: '4.1.2'
+
+
+
+     // https://mvnrepository.com/artifact/org.hamcrest/hamcrest
+      testImplementation 'org.hamcrest:hamcrest:2.2'
+}
+
+
+test {
+    // Use junit platform for unit tests
+    useJUnitPlatform()
+}
+
+project.tasks["sonarqube"].dependsOn "jacocoTestReport"
+test.finalizedBy jacocoTestReport
+
+
+task createGCP(type:Exec) {
+	group 'Deployment'
+	description 'create google cloud project'
+	commandLine 'ansible-playbook', '../../Infrastructure/Deployment/CreateProject.yaml'
+ }
+
+ task deletGCP (type:Exec) {
+   group 'Deployment'
+	description 'create google cloud project'
+	commandLine 'ansible-playbook', '../../Infrastructure/Deployment/DeleteProject.yaml'
+}
+
+
