@@ -4,3 +4,4 @@
 # Ignore Gradle build output directory
 build
 /package-lock.json
+/node_modules/

@@ -1,6 +1,7 @@
 package org.steinko.rest;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -64,7 +65,7 @@ public class PersonControllerIT  {
 
 
 
-
+  @Disabled
   @Test
   void shouldCreatePerson() throws JsonProcessingException {
      Person person = new Person("1","Anne", "Korsveien");
@@ -95,7 +96,8 @@ public class PersonControllerIT  {
 	   .log().ifValidationFails()
        .statusCode(OK.value());
     }
-  
+    
+  @Disabled
    @Test  
    void shouldupdatePerson() throws JsonProcessingException
   {

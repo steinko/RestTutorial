@@ -5,4 +5,6 @@ dist: trusty
 script: 
   - ./backend/gradlew check
   - ./backend/gradlew sonarqube
+  - ./frontend/gradlew npmTest
+  - ./backend/gradlew sonarqube
 
