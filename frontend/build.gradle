@@ -1,0 +1,81 @@
+buildscript {    // Configuration for building
+  repositories {
+    jcenter()    // Bintray's repository - a fast Maven Central mirror & more
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'com.google.cloud.tools:appengine-gradle-plugin:2.1.0'    // Latest 1.x.x release
+  }
+}
+
+plugins {
+  id "org.sonarqube" version "2.8"
+  id 'com.moowork.node' version "1.3.1"  
+}
+
+apply plugin: 'com.google.cloud.tools.appengine-appyaml'
+
+
+ sonarqube {
+    properties {
+		    property "sonar.host.url","https://sonarcloud.io"
+        property "sonar.sourceEncoding", "UTF-8"
+		    property "sonar.login", "43983a01ea79d77e7ce4931e989733cdcfb6ef47"
+		    property "sonar.organization" , "steinko-github"
+        property "sonar.testExecutionReportPaths", "test-report.xml"
+       
+    }
+}
+
+appengine {
+  
+
+  stage {
+      appEngineDirectory  'config'
+      dockerDirectory 'config'
+      artifact  'build/libs/RestTutorial.jar'
+      
+    }
+  deploy {   
+    appEngineDirectory = './'
+    stopPreviousVersion = true  // default - stop the current version
+    promote = true              // default - & make this the current version
+    projectId = 'springboot15'
+    version = '1'
+  }
+
+}
+
+
+repositories {
+    // Use jcenter for resolving dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+}
+
+dependencies {
+    
+}
+
+node {
+    version = '12.5.0.'
+    download = false
+}
+
+task npmBuild(type: NpmTask) {
+    dependsOn 'npmTest'
+    execOverrides {
+        it.workingDir = "$projectDir"
+    }
+    args = ['run', 'build']
+}
+
+task npmTest(type:NpmTask){
+    execOverrides {
+        it.workingDir = "$projectDir"
+    }
+    args = ['run', 'test',  '--','--watchAll=false']
+}
+
+
+

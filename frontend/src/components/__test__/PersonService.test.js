@@ -22,8 +22,8 @@ const person3 = {
 
 beforeAll(() => {
 						
-  fetchMock.get('http://localhost:8080/person?1',JSON.stringify(person1), { status: 200 })
-  fetchMock.get('http://localhost:8080/person?2',JSON.stringify(person2), { status: 200 })
+  fetchMock.get('http://localhost:8080/person?id=1',JSON.stringify(person1), { status: 200 })
+  fetchMock.get('http://localhost:8080/person?id=2',JSON.stringify(person2), { status: 200 })
   fetchMock.put('http://localhost:8080/person/update',JSON.stringify(person3), { status: 200 })
 })
 beforeEach(() => {
