@@ -42,11 +42,11 @@ public class PersonAPITest {
 	
 	@JsonPropertyOrder({  "id", "firstName", "familyName" })
 	public class JsonPerson {
-	    public int id;
+	    public String id;
 	    public String firstName;
 	    public String familyName;
 	  
-	   public JsonPerson(int id, String firstName, String familyName) {
+	   public JsonPerson(String id, String firstName, String familyName) {
 		this.id = id;
 		this.firstName = firstName;
 		this.familyName = familyName;
@@ -55,6 +55,7 @@ public class PersonAPITest {
 	
 	private static Logger logger = LogManager.getLogger(PersonAPITest.class);
 	private Response response;
+	private Response updateResponse;
 	private String id;
 	
 	@Before
@@ -67,26 +68,7 @@ public class PersonAPITest {
 	 * Scenario Get the Person
 	 */
 	
-	@Given("Person Exist")
-	public void person_Exist() {
-		
-	}
 	
-
-	@When("I activet the get person")
-	public void i_activet_the_get_person() {
-		RestAssured.baseURI = "http://localhost:8080";
-		response =when().get( "/person");
-	}
-
-	@Then("I recive a Person")
-	public void i_recive_a_Person() {
-		response.then().statusCode(200)
-	    .assertThat()
-	      .body("firstName", equalTo("Stein"))
-	      .body("familyName", equalTo("Korsveien"));
-	    
-	}
 	
 	/**
 	 * Scenario Create Person
@@ -100,14 +82,14 @@ public class PersonAPITest {
 
     @When("I want to create a person with first name {string} and family name {string}")
     public void i_want_to_create_a_person_with_first_name_and_family_name(String firstName, String familyName) throws JsonProcessingException {
-    	JsonPerson bean = new JsonPerson(1, firstName, familyName);
+    	JsonPerson bean = new JsonPerson("1", firstName, familyName);
     	String json = convertToJson(bean);
     	RestAssured.baseURI = "http://localhost:8080";
     	response = given()
 		          .contentType("application/json")
 		    	  .body(json)
 		          .when()
-		          .post("person/");
+		          .post("person/create");
     }
 
 
@@ -147,7 +129,7 @@ public class PersonAPITest {
     /**
    	 * Scenario Update Person
    	 */
-
+    private JsonPerson bean;
     
     @Given("Person with id {int} exist with first name {string} and familiy name {string}")
     public void person_with_id_exist_with_first_name_and_familiy_name(Integer int1, String string, String string2) {
@@ -157,10 +139,11 @@ public class PersonAPITest {
     @When("I want to update the person with {int} with first name {string} familiy name {string}")
     public void i_want_to_update_the_person_with_with_first_name_familiy_name(Integer id, String firstName, String familyName) throws JsonProcessingException {
     	RestAssured.baseURI = "http://localhost:8080";
-    	String url = "/person/" + id.toString();
-    	JsonPerson bean = new JsonPerson(1, "Sture", "Stureson");
+    	String url = "/person/update";
+    	
+    	bean = new JsonPerson(id.toString(), firstName, familyName);
     	String json = convertToJson(bean);
-    	response = given()
+    	updateResponse = given()
 		          .contentType("application/json")
 		    	  .body(json)
 		          .when()
@@ -171,7 +154,21 @@ public class PersonAPITest {
 
     @Then("The persons first name and fammiliy name is updated")
     public void the_persons_first_name_and_fammiliy_name_is_updated() {
-    	response.then().statusCode(200);
+    	updateResponse.then().statusCode(200);
+    	
+    	String url = "/person";
+    	
+    	given().
+			  param("id",bean.id ).
+	          contentType("application/json").
+	    when().
+	           get(url).
+    	then()
+    	   .statusCode(200)
+	       .assertThat()
+	         .body("firstName", equalTo(bean.firstName))
+	         .body("familyName", equalTo(bean.familyName));
+    	
        
     }
     
@@ -222,8 +219,9 @@ public class PersonAPITest {
     public void thePersonWithIdIsUpdatedWithFirstNameAndFammiliyName(Integer id, String firstName, String familyName) throws JsonProcessingException {
     	
     	RestAssured.baseURI = "http://localhost:8080";
-    	String url = "/person/" + id.toString();
-    	JsonPerson bean = new JsonPerson(id, firstName, familyName);
+    	String url = "/person/update";
+   
+    	JsonPerson bean = new JsonPerson(id.toString(), firstName, familyName);
     	String json = convertToJson(bean);
     	response = given()
 		          .contentType("application/json")
@@ -231,10 +229,8 @@ public class PersonAPITest {
 		          .when()
 		          .put(url);
 		    response.then().
-		          statusCode(200).
-		          assertThat()
-		          .body("firstName", equalTo(firstName))
-		   	      .body("familyName", equalTo(familyName));
+		          statusCode(200);
+		          
        
     }
 

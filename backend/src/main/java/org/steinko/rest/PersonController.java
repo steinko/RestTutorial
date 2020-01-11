@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
-
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,27 +30,27 @@ public class PersonController {
 	
 	private static Logger logger = LogManager.getLogger(PersonController.class);
 	private Map<String,Person> persons;
+	private PersonService service;
 	
 	public PersonController() {
-	  persons = new HashMap<String,Person>();
-	  persons.put("1",new Person("1","Oddmund",  "Korsveien"));
-	  persons.put("2",new Person("2","Stein",  "Korsveien"));
+		service = new PersonService();
+	  
 	}
 	
 	@GetMapping
-	public ResponseEntity<Person> getPerson(@RequestParam("id") String id) {
+	public Person getPerson(@RequestParam("id") String id) {
+		
 		logger.info("get id: " +  id);
-		Person selected = persons.get(id);
+		Integer result = Integer.valueOf(id);	
+		Person selected = service.getPersonById(result);
 		logger.info("get selected:" + selected.toString());
-		ResponseEntity<Person> response = new ResponseEntity<Person>(selected,HttpStatus.OK);
-		return response;
+		return selected;
 	}
 	
 	@PostMapping(value= "/create")
-	public ResponseEntity<Person> createPerson(@RequestBody Person person) {
-		Person aPerson =  person;
+	public Person createPerson(@RequestBody Person person) {
 		logger.info("post:"+ person.getId()+ person.getFirstName()+ person.getFamilyName());
-		return new ResponseEntity<Person> (person,HttpStatus.CREATED);
+		return person;
 	}
 	
 	
@@ -60,17 +60,14 @@ public class PersonController {
 	    return new ResponseEntity<String>( HttpStatus.OK);
 	}
 	
-	@PutMapping(value = "/update", headers="Accept=application/json")
-	public ResponseEntity<String> updatePerson(@RequestBody Person person) 
+	@ResponseStatus(HttpStatus.OK)
+	@PutMapping(value = "/update")
+	public void updatePerson(@RequestBody Person person) 
 	{
 		logger.info("put: "+ person.toString());
-		Person selected = persons.get(person.getId());
-		logger.info("put selected:" + selected.toString());
-		
-		selected.setFirstName(person.getFirstName());
-		selected.setFamilyName(person.getFamilyName());
-		logger.info(selected.toString());
-	    return new ResponseEntity<String>(HttpStatus.OK);
+		service.udatePersonById(person);
+		logger.info("end controller put");
+	   
 	}
 	
 

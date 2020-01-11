@@ -25,13 +25,13 @@ export default class Person extends Component{
 		personService = new PersonService()
 	 }
 
-    async componentDidMount(){
-			if(!this.state.id === '') {
-			   const person = await personService.get(this.state.id)
-			   logger.info("Person id" + person.id)
-			   this.setState ( {id:person.id, firstName: person.firstName, familyName: person.familyName }) 
-			}
-		}
+   // async componentDidMount(){
+	//		if(!this.state.id === '') {
+	//		   const person = await personService.get(this.state.id)
+//			   logger.info("Person id" + person.id)
+//			   this.setState ( {id:person.id, firstName: person.firstName, familyName: person.familyName }) 
+//			}
+//		}
 		
 		handleChangeId(event)  {
 			this.setState( {id: event.target.value	})
@@ -46,70 +46,67 @@ export default class Person extends Component{
 		 }
 
 		 async handleSubmit(event)  {
-      logger.info(this.state,{})
-			await personService.put(this.state)
+        logger.info(this.state,{})
+			  await personService.put(this.state)
+			  const person = await  personService.get(this.state.id)		 
+			  this.setState ( {id:person.id, firstName: person.firstName, familyName: person.familyName }) 
 		 }
 		 
 		 async handleGet(event)  {
-      logger.info(this.state,{})
-			const person = await personService.get(this.state.id)
-			logger.info( "id:" + person.id + 'firstName:' + 'person.firstName' + 'familyName:'+ person.familyName )
-			this.setState ( {id:person.id, firstName: person.firstName, familyName: person.familyName }) 
-
+       logger.info(this.state,{})
+			 const person = await personService.get(this.state.id)
+			 logger.info( 'id:' + person.id + 'firstName:' + person.firstName + 'familyName:' + person.familyName )
+			 this.setState ( {id:person.id, firstName: person.firstName, familyName: person.familyName }) 
 		 }
 
+	  render(){ 
+		  return (
 
+		  <form id = "submit" onSubmit = {this.handleSubmit }>
 
-	render(){ 
-		const { person, isLoading } = this.state;
-        if (isLoading) {
-         return <p>Loading ...</p>;
-        }
-		
-		return ( 
-		<form id = "submit" onSubmit = {this.handleSubmit }>
-			<label>
-				Id:  
-				<input 
-					 id= "id"
-					 data-testid= "dtid"
-				   type= "text"
-					 value= {this.state.id } 
-					 onChange = {this.handleChangeId }
-				/>	
-			</label>
-			<label> 
-				First Name:  
-				<input
-				  id= "firstName"
-				  type= "text"
-					value= {this.state.firstName } 
-					onChange = {this.handleChangeFirstName }
+			  <label>
+				  Id:  
+				  <input 
+					  id= "id"
+					  data-testid= "dtid"
+				    type= "text"
+					  value= {this.state.id } 
+					  onChange = {this.handleChangeId }
+				  />	
+			  </label>
+
+			  <label> 
+				  First Name:  
+				  <input
+				    id= "firstName"
+				    type= "text"
+					  value= {this.state.firstName } 
+					  onChange = {this.handleChangeFirstName }
 					/>
-			</label>
-			<label>
-				Family Name:  
-				<input
-				   id= "familyName"
-				   type= "text"
-					 value=  {this.state.familyName } 
-					 onChange = {this.handleChangeFamilyName }
-				/>
-			</label>
+        </label>
 
-			<input 
+			  <label>
+				  Family Name:  
+				  <input
+				    id= "familyName"
+				    type= "text"
+					  value=  {this.state.familyName } 
+					  onChange = {this.handleChangeFamilyName }
+				 />
+			  </label>
+
+			  <input 
 				 type= "submit"
-				 value= "Submit"
-			/>
+				 value= "Update"
+			  />
 
-			<button 
-				type="button"
-				onClick = { this.handleGet }
-			 >
-				Get
-			 </button>
+			  <button 
+				 type="button"
+				 onClick = { this.handleGet }
+			  >
+				  Get
+			  </button>
 
-			  
 		</form>)
 		}
 }

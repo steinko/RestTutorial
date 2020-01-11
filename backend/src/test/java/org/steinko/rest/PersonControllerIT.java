@@ -50,6 +50,8 @@ public class PersonControllerIT  {
   void shoulReturnPerson() throws JsonProcessingException{
 	  Person person  = new Person("2","Stein","Korsveien");
 	   String jsonPerson = ControllerTestUtility.convertToJson(person);
+	   
+	   
 	   given().
 	       param("id","2")
 	      .webAppContextSetup(webApplicationContext)
@@ -65,16 +67,17 @@ public class PersonControllerIT  {
 
 
 
-  @Disabled
+ 
   @Test
   void shouldCreatePerson() throws JsonProcessingException {
      Person person = new Person("1","Anne", "Korsveien");
      String jsonPerson = ControllerTestUtility.convertToJson(person);
-     given()
-       .webAppContextSetup(webApplicationContext)
+     given().
+        contentType("application/json").
+        webAppContextSetup(webApplicationContext)
        .body(person).
      when()
-       .post(url).
+       .post(url + "/create").
      then()
        .log().ifValidationFails()
        .statusCode(OK.value())
@@ -97,16 +100,17 @@ public class PersonControllerIT  {
        .statusCode(OK.value());
     }
     
-  @Disabled
+  
    @Test  
-   void shouldupdatePerson() throws JsonProcessingException
+   void shouldUpdatePerson() throws JsonProcessingException
   {
       Person person = new Person("1", "New Name", "Gilly");
       String jsonPerson = ControllerTestUtility.convertToJson(person);
       logger.info("start update product integration test");
       
-      given()
-        .webAppContextSetup(webApplicationContext)
+      given().
+         contentType("application/json").
+         webAppContextSetup(webApplicationContext)
         .body(jsonPerson).
       when()
         .put(url + "/update").
